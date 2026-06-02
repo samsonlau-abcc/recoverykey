@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABCC Wallet - Full Manual Recovery Flow</title>
+    <title>ABCC Wallet - Final Manual Recovery Flow</title>
     <style>
         /* Base styles */
         body {
@@ -54,7 +54,7 @@
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn-primary { background: #FFD012; color: #000000; } 
         .btn-secondary { background: #3A3A3C; color: #FFFFFF; }
-        .btn-outline { background: transparent; border: 1px solid #4A4A4A; color: #FFFFFF; text-align: left; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-outline { background: transparent; border: 1px solid #4A4A4A; color: #FFFFFF; text-align: left; display: flex; align-items: center; justify-content: flex-start; gap: 10px; }
         .btn-outline:hover { border-color: #8E8E93; }
         
         .btn-danger { background: rgba(255, 69, 58, 0.1); border: 1px solid #FF453A; color: #FF453A; }
@@ -133,13 +133,13 @@
                     <div class="screen-title">🛡️ Verify your Identity</div>
                     <div class="screen-subtitle">Please choose a method to access your wallet.</div>
                     
-                    <button class="btn btn-outline" style="justify-content: flex-start;">📱 Transfer from old device</button>
+                    <button class="btn btn-outline">📱 Transfer from old device</button>
                     
                     <div style="margin: 20px 0; border-top: 1px solid #2C2C2E; padding-top: 20px;">
                         <span style="color: #8E8E93; font-size: 0.85rem; margin-bottom: 10px; display: block;">Past Recovery Keys</span>
-                        <button class="btn btn-outline" style="justify-content: flex-start;">☁️ iCloud Backup</button>
-                        <button class="btn btn-outline" style="justify-content: flex-start;">📁 Google Drive</button>
-                        <button class="btn btn-outline" style="justify-content: flex-start;">🔳 Scan Saved QR Code</button>
+                        <button class="btn btn-outline">☁️ iCloud Backup</button>
+                        <button class="btn btn-outline">📁 Google Drive</button>
+                        <button class="btn btn-outline">🔳 Scan Saved QR Code</button>
                     </div>
                     
                     <div style="background: rgba(255, 69, 58, 0.05); border-radius: 8px; padding: 15px; margin-top: 20px;">
@@ -188,7 +188,7 @@
 
         <div class="ui-step">
             <div class="step-header"><div class="step-title">Phase 3: Verification Checking (System Routing)</div></div>
-            <div class="step-desc">The system routes the user to one of three options based on their account status. Once submitted, a notification is triggered.</div>
+            <div class="step-desc">The system routes the user to one of two options (Liveness or Manual Request). Once submitted, a notification is triggered upon status change.</div>
             <div class="step-body">
                 <div class="screen-row">
                     
@@ -203,25 +203,13 @@
                         <button class="btn btn-primary" style="margin-bottom: 0;">Start Face Scan</button>
                     </div>
 
-                    <div class="screen" style="border-top: 3px solid #FFD012;">
-                        <div class="screen-title">🟡 Option 2</div>
-                        <div class="screen-subtitle">Need Documents</div>
-                        
-                        <p style="color: #E0E0E0; font-size: 0.9rem; text-align: center;">Sumsub Doc Verification</p>
-                        <button class="btn btn-outline" style="border-color: #30D158; color: #30D158;">✅ SMS & Email OTP Verified</button>
-                        <button class="btn btn-outline" style="border-style: dashed;">📄 Upload ID Document</button>
-                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">Upload clear photos of your ID for manual review by Sumsub.</p>
-                        
-                        <button class="btn btn-primary" style="margin-bottom: 0;">Submit Documents</button>
-                    </div>
-
                     <div class="screen" style="border-top: 3px solid #BF5AF2;">
-                        <div class="screen-title">🟣 Option 3</div>
+                        <div class="screen-title">🟣 Option 2</div>
                         <div class="screen-subtitle">VIP / Manual Verification</div>
                         
                         <p style="color: #E0E0E0; font-size: 0.9rem; text-align: center;">Direct Admin Request</p>
-                        <textarea class="inline-edit" placeholder="Enter reason for manual recovery (Optional)" style="height: 80px; resize: none;"></textarea>
-                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">Submit a request directly to the Admin Portal without uploading documents.</p>
+                        <textarea class="inline-edit" placeholder="Enter reason for manual recovery (Optional)" style="height: 100px; resize: none;"></textarea>
+                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">Submit a request directly to the Admin Portal. No document upload required.</p>
                         
                         <button class="btn btn-primary" style="margin-bottom: 0;">Submit Request</button>
                     </div>
@@ -233,7 +221,7 @@
                     <div>
                         <div style="color: #FFFFFF; font-weight: bold;">System Action: Database Update & Notification Triggered</div>
                         <div style="color: #8E8E93; font-size: 0.9rem; margin-top: 4px;">
-                            Regardless of the option, once the status is updated to <b>Pending</b>, <b>Approved</b>, or <b>Rejected</b>, the system automatically sends an SMS & Email notification to prompt the user to log back in.
+                            Once the status is updated to <b>Pending</b>, <b>Approved</b>, or <b>Rejected</b>, the system automatically sends an SMS & Email notification to prompt the user to log back in.
                         </div>
                     </div>
                 </div>
@@ -267,11 +255,11 @@
                         
                         <div style="background: rgba(255, 69, 58, 0.1); border: 1px solid rgba(255, 69, 58, 0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                             <span style="color: #FF453A; font-size: 0.85rem; font-weight: bold;">Reason:</span><br>
-                            <span style="color: #E0E0E0; font-size: 0.85rem;">The submitted ID photo was too blurry to read.</span>
+                            <span style="color: #E0E0E0; font-size: 0.85rem;">The submitted information did not match our records.</span>
                         </div>
 
                         <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 25px; flex-grow: 1;">
-                            Unfortunately, we could not verify your identity. Please re-apply and ensure all documents are clear.
+                            Unfortunately, we could not verify your identity. Please re-apply if you believe this was an error.
                         </p>
 
                         <button class="btn btn-danger" style="margin-bottom: 0;">Re-apply (Return to Phase 1)</button>
