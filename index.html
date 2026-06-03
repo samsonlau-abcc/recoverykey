@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABCC Wallet - Final Manual Recovery Flow</title>
+    <title>ABCC Wallet - Full Manual Recovery Flow</title>
     <style>
         /* Base styles */
         body {
@@ -14,7 +14,7 @@
             color: #E0E0E0;
             line-height: 1.6;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
         h1 {
             text-align: center;
             color: #FFFFFF;
@@ -51,16 +51,17 @@
 
         /* Buttons & Inputs */
         .btn { padding: 12px 20px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; font-size: 0.95rem; transition: opacity 0.2s; width: 100%; box-sizing: border-box; text-align: center; margin-bottom: 15px; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: #2C2C2E; color: #555; background: transparent; }
         .btn-primary { background: #FFD012; color: #000000; } 
         .btn-secondary { background: #3A3A3C; color: #FFFFFF; }
         .btn-outline { background: transparent; border: 1px solid #4A4A4A; color: #FFFFFF; text-align: left; display: flex; align-items: center; justify-content: flex-start; gap: 10px; }
-        .btn-outline:hover { border-color: #8E8E93; }
+        .btn-outline:hover:not(:disabled) { border-color: #8E8E93; }
         
         .btn-danger { background: rgba(255, 69, 58, 0.1); border: 1px solid #FF453A; color: #FF453A; }
 
         .inline-checkbox { transform: scale(1.2); cursor: pointer; accent-color: #FFD012; margin-right: 10px;}
         .inline-edit { background: #000000; border: 1px solid #2C2C2E; color: #FFFFFF; padding: 10px; border-radius: 6px; width: 100%; box-sizing: border-box; margin-bottom: 15px; font-family: inherit;}
+        .screen-label { font-size: 0.8rem; color: #8E8E93; margin-bottom: 6px; display: block; font-weight: bold; }
 
         /* App Screen Layout */
         .screen-row { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; }
@@ -71,7 +72,7 @@
             padding: 25px; 
             border-radius: 12px; 
             min-width: 300px;
-            max-width: 400px;
+            max-width: 380px;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -100,7 +101,7 @@
             text-align: center;
         }
         
-        .camera-box { border: 2px dashed #FFD012; height: 120px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; background: rgba(255, 208, 18, 0.05); color: #FFD012; font-size: 2rem; }
+        .camera-box { border: 2px dashed #FFD012; height: 130px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; background: rgba(255, 208, 18, 0.05); color: #FFD012; font-size: 2rem; }
         
         .status-icon { font-size: 3.5rem; text-align: center; margin-bottom: 15px; }
         .text-warning { color: #FFD012; }
@@ -187,31 +188,68 @@
         </div>
 
         <div class="ui-step">
-            <div class="step-header"><div class="step-title">Phase 3: Verification Checking (System Routing)</div></div>
-            <div class="step-desc">The system routes the user to one of two options (Liveness or Manual Request). Once submitted, a notification is triggered upon status change.</div>
+            <div class="step-header"><div class="step-title">Phase 3: Verification Route & Execution</div></div>
+            <div class="step-desc">The user lands on a Choice Screen. Option 1 is conditionally offered if the system detects existing Face Data. Liveness leads directly to status change, while Option 2 processes 2FA.</div>
             <div class="step-body">
                 <div class="screen-row">
                     
-                    <div class="screen" style="border-top: 3px solid #30D158;">
-                        <div class="screen-title">🟢 Option 1</div>
-                        <div class="screen-subtitle">KYC Supported</div>
+                    <div class="screen">
+                        <div class="screen-title">🛡️ Choose Route</div>
+                        <div class="screen-subtitle">Select how you want to verify your identity.</div>
                         
-                        <p style="color: #E0E0E0; font-size: 0.9rem; text-align: center;">Sumsub Liveness Check</p>
-                        <div class="camera-box">🎥</div>
-                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">Position your face within the frame to verify your identity instantly.</p>
+                        <div style="margin-bottom: 20px; background: #121212; padding: 12px; border: 1px solid #2C2C2E; border-radius: 8px;">
+                            <span style="font-size:0.8rem; color:#8E8E93;">🔍 Background Check Result:</span>
+                            <div style="color:#30D158; font-size:0.85rem; font-weight:bold; margin-top:4px;">✓ Face Data Detected in System</div>
+                        </div>
+
+                        <button class="btn btn-outline" style="padding: 15px;">
+                            <div>
+                                <span style="font-weight:bold; color:#FFFFFF; display:block;">🟢 Option 1: Instant Liveness</span>
+                                <span style="font-size:0.75rem; color:#8E8E93;">Scan face to approve instantly. No forms required.</span>
+                            </div>
+                        </button>
+
+                        <button class="btn btn-outline" style="padding: 15px;">
+                            <div>
+                                <span style="font-weight:bold; color:#FFFFFF; display:block;">🟣 Option 2: VIP / Manual Review</span>
+                                <span style="font-size:0.75rem; color:#8E8E93;">Requires SMS+Email 2FA. Sent to Admin Portal.</span>
+                            </div>
+                        </button>
                         
-                        <button class="btn btn-primary" style="margin-bottom: 0;">Start Face Scan</button>
+                        <p style="color: #636366; font-size: 0.75rem; text-align: center; margin-top: auto;">※ If NO face data was found, Option 1 will be grayed out/hidden.</p>
                     </div>
 
-                    <div class="screen" style="border-top: 3px solid #BF5AF2;">
+                    <div class="screen" style="border-color: #30D158;">
+                        <div class="screen-title">🟢 Option 1</div>
+                        <div class="screen-subtitle">Sumsub Liveness Check</div>
+                        
+                        <div class="camera-box" style="margin-top: 15px; height: 160px;">🎥</div>
+                        <p style="color: #30D158; font-size: 0.85rem; text-align: center; font-weight: bold; margin-bottom: 5px;">Ready to Scan</p>
+                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">
+                            Position your face within the oval frame and blink when prompted to verify instantly.
+                        </p>
+                        
+                        <button class="btn btn-primary" style="margin-top: auto; margin-bottom: 0;">Start Biometric Scan</button>
+                    </div>
+
+                    <div class="screen" style="border-color: #BF5AF2;">
                         <div class="screen-title">🟣 Option 2</div>
-                        <div class="screen-subtitle">VIP / Manual Verification</div>
+                        <div class="screen-subtitle">VIP / Manual Submission</div>
                         
-                        <p style="color: #E0E0E0; font-size: 0.9rem; text-align: center;">Direct Admin Request</p>
-                        <textarea class="inline-edit" placeholder="Enter reason for manual recovery (Optional)" style="height: 100px; resize: none;"></textarea>
-                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">Submit a request directly to the Admin Portal. No document upload required.</p>
+                        <span class="screen-label">1. Security Verification (Required 2FA)</span>
+                        <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                            <input type="text" class="inline-edit" placeholder="SMS Code" style="margin-bottom:0; padding:8px; font-size:0.85rem;">
+                            <input type="text" class="inline-edit" placeholder="Email Code" style="margin-bottom:0; padding:8px; font-size:0.85rem;">
+                        </div>
+
+                        <span class="screen-label">2. Request Details</span>
+                        <textarea class="inline-edit" placeholder="Enter reason for manual recovery (Optional)" style="height: 60px; resize: none; margin-bottom: 10px; font-size:0.85rem;"></textarea>
                         
-                        <button class="btn btn-primary" style="margin-bottom: 0;">Submit Request</button>
+                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 15px; flex-grow: 1;">
+                            You must complete the 2FA codes above before you can submit this manual recovery token request to the Admin.
+                        </p>
+                        
+                        <button class="btn btn-primary" style="margin-bottom: 0;">Verify & Submit Request</button>
                     </div>
 
                 </div>
@@ -221,7 +259,7 @@
                     <div>
                         <div style="color: #FFFFFF; font-weight: bold;">System Action: Database Update & Notification Triggered</div>
                         <div style="color: #8E8E93; font-size: 0.9rem; margin-top: 4px;">
-                            Once the status is updated to <b>Pending</b>, <b>Approved</b>, or <b>Rejected</b>, the system automatically sends an SMS & Email notification to prompt the user to log back in.
+                            Once the status transitions to <b>Pending</b>, <b>Approved</b>, or <b>Rejected</b>, the system automatically dispatches an SMS & Email notification to pull the user back into the app.
                         </div>
                     </div>
                 </div>
