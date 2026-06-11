@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABCC Wallet - Full Manual Recovery Flow</title>
+    <title>ABCC Wallet - Complete Manual Recovery Flow</title>
     <style>
         /* Base styles */
         body {
@@ -58,6 +58,7 @@
         .btn-outline:hover:not(:disabled) { border-color: #8E8E93; }
         
         .btn-danger { background: rgba(255, 69, 58, 0.1); border: 1px solid #FF453A; color: #FF453A; }
+        .btn-danger-solid { background: #FF453A; color: #FFFFFF; }
 
         .inline-checkbox { transform: scale(1.2); cursor: pointer; accent-color: #FFD012; margin-right: 10px;}
         .inline-edit { background: #000000; border: 1px solid #2C2C2E; color: #FFFFFF; padding: 10px; border-radius: 6px; width: 100%; box-sizing: border-box; margin-bottom: 15px; font-family: inherit;}
@@ -120,136 +121,199 @@
             gap: 15px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
         }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .badge-pending { background: rgba(255, 208, 18, 0.15); color: #FFD012; border: 1px solid #FFD012; }
+        .badge-rejected { background: rgba(255, 69, 58, 0.15); color: #FF453A; border: 1px solid #FF453A; }
+        .badge-approved { background: rgba(48, 209, 88, 0.15); color: #30D158; border: 1px solid #30D158; }
+        .badge-none { background: rgba(142, 142, 147, 0.15); color: #8E8E93; border: 1px solid #4A4A4A; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>ABCC Manual Recovery UI Flow</h1>
+        <h1>ABCC Manual Recovery - Complete UI Specification</h1>
 
         <div class="ui-step">
-            <div class="step-header"><div class="step-title">Phase 1: Login & Select Recovery Method</div></div>
-            <div class="step-desc">After standard login and SMS OTP, the user is presented with options to restore their wallet access.</div>
+            <div class="step-header"><div class="step-title">Phase 0: Account Login & Initial 2FA</div></div>
+            <div class="step-desc">The entry point for all users. Validating standard account credentials and the first layer of SMS One-Time Password.</div>
             <div class="step-body">
-                <div class="screen" style="margin: 0 auto;">
-                    <div class="screen-title">🛡️ Verify your Identity</div>
-                    <div class="screen-subtitle">Please choose a method to access your wallet.</div>
-                    
-                    <button class="btn btn-outline">📱 Transfer from old device</button>
-                    
-                    <div style="margin: 20px 0; border-top: 1px solid #2C2C2E; padding-top: 20px;">
-                        <span style="color: #8E8E93; font-size: 0.85rem; margin-bottom: 10px; display: block;">Past Recovery Keys</span>
-                        <button class="btn btn-outline">☁️ iCloud Backup</button>
-                        <button class="btn btn-outline">📁 Google Drive</button>
-                        <button class="btn btn-outline">🔳 Scan Saved QR Code</button>
+                <div class="screen-row">
+                    <div class="screen">
+                        <div class="screen-title">Welcome to ABCC</div>
+                        <div class="screen-subtitle">Sign in to your wallet account</div>
+                        <span class="screen-label">Email Address</span>
+                        <input type="text" class="inline-edit" value="user@email.com">
+                        <span class="screen-label">Password</span>
+                        <input type="password" class="inline-edit" value="••••••••••••">
+                        <button class="btn btn-primary" style="margin-top: auto; margin-bottom: 0;">Login</button>
                     </div>
-                    
-                    <div style="background: rgba(255, 69, 58, 0.05); border-radius: 8px; padding: 15px; margin-top: 20px;">
-                        <p style="color: #FFFFFF; font-weight: bold; margin: 0 0 5px 0;">Lost Recovery Key?</p>
-                        <p style="color: #8E8E93; font-size: 0.85rem; margin: 0 0 15px 0;">If you lost your key or device, request a manual reset.</p>
-                        <button class="btn btn-primary" style="margin-bottom: 0;">👉 Start Manual Recovery</button>
+                    <div class="screen">
+                        <div class="screen-title">💬 SMS OTP Check</div>
+                        <div class="screen-subtitle">First layer security validation</div>
+                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 25px;">Enter the 6-digit verification code sent to your registered phone number (+852 **** 1234).</p>
+                        <input type="text" class="inline-edit" placeholder="_ _ _ _ _ _" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px;">
+                        <button class="btn btn-primary" style="margin-top: auto; margin-bottom: 0;">Verify Code</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="ui-step">
-            <div class="step-header"><div class="step-title">Phase 2: Generate & Backup New Key (Pre-Verification)</div></div>
-            <div class="step-desc">Before starting the manual review, the system generates a new key locally. The user MUST back this up first.</div>
+            <div class="step-header"><div class="step-title">Phase 1: Select Recovery Method (4 Dynamic Entrance States)</div></div>
+            <div class="step-desc">Users who log back in will always land on this page. The "Manual Recovery" card dynamic component updates its layout and triggers based on back-end request status tracking.</div>
             <div class="step-body">
                 <div class="screen-row">
+                    
                     <div class="screen">
-                        <div class="screen-title">🔑 Create New Recovery Key</div>
-                        <div class="screen-subtitle" style="margin-bottom: 25px;">Select how you want to backup your new key.</div>
-                        
-                        <button class="btn btn-secondary" style="text-align: left; display: flex; gap: 10px;">☁️ Save to iCloud</button>
-                        <button class="btn btn-secondary" style="text-align: left; display: flex; gap: 10px;">📁 Save to Google Drive</button>
-                        <button class="btn btn-secondary" style="text-align: left; display: flex; gap: 10px;">🔳 Generate QR Code (Manual)</button>
+                        <div class="screen-title">🛡️ Recovery Menu</div>
+                        <div class="screen-subtitle">State 1: Initial / No Active Request</div>
+                        <button class="btn btn-outline" disabled>📱 Transfer from old device</button>
+                        <button class="btn btn-outline" disabled>☁️ Past Recovery Backup</button>
+                        <div style="background: rgba(255, 208, 18, 0.02); border: 1px solid #2C2C2E; border-radius: 8px; padding: 15px; margin-top: auto;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="color: #FFFFFF; font-weight: bold; font-size:0.9rem;">Lost Recovery Key?</span>
+                                <span class="status-badge badge-none">No Request</span>
+                            </div>
+                            <p style="color: #8E8E93; font-size: 0.8rem; margin: 0 0 12px 0;">Request an identity check to reset.</p>
+                            <button class="btn btn-primary" style="margin-bottom: 0; padding:8px;">👉 Start Manual Recovery</button>
+                        </div>
+                    </div>
+
+                    <div class="screen">
+                        <div class="screen-title">🛡️ Recovery Menu</div>
+                        <div class="screen-subtitle">State 2: Application Under Review</div>
+                        <button class="btn btn-outline" disabled>📱 Transfer from old device</button>
+                        <button class="btn btn-outline" disabled>☁️ Past Recovery Backup</button>
+                        <div style="background: rgba(255, 208, 18, 0.05); border: 1px solid rgba(255, 208, 18, 0.2); border-radius: 8px; padding: 15px; margin-top: auto;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="color: #FFFFFF; font-weight: bold; font-size:0.9rem;">Lost Recovery Key?</span>
+                                <span class="status-badge badge-pending">Under Review ⏳</span>
+                            </div>
+                            <p style="color: #8E8E93; font-size: 0.8rem; margin: 0 0 12px 0;">Your process tracking token is active.</p>
+                            <button class="btn btn-primary" style="margin-bottom: 0; padding:8px;">👉 View Pending Status</button>
+                        </div>
+                    </div>
+
+                    <div class="screen">
+                        <div class="screen-title">🛡️ Recovery Menu</div>
+                        <div class="screen-subtitle">State 3: Request Rejected Case</div>
+                        <button class="btn btn-outline" disabled>📱 Transfer from old device</button>
+                        <button class="btn btn-outline" disabled>☁️ Past Recovery Backup</button>
+                        <div style="background: rgba(255, 69, 58, 0.05); border: 1px solid rgba(255, 69, 58, 0.2); border-radius: 8px; padding: 15px; margin-top: auto;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="color: #FFFFFF; font-weight: bold; font-size:0.9rem;">Lost Recovery Key?</span>
+                                <span class="status-badge badge-rejected">Rejected ❌</span>
+                            </div>
+                            <p style="color: #8E8E93; font-size: 0.8rem; margin: 0 0 12px 0;">Verification failed. Review detail explanation.</p>
+                            <button class="btn btn-danger" style="margin-bottom: 0; padding:8px;">👉 View Reapply Option</button>
+                        </div>
+                    </div>
+
+                    <div class="screen">
+                        <div class="screen-title">🛡️ Recovery Menu</div>
+                        <div class="screen-subtitle">State 4: Key Active / Approved</div>
+                        <button class="btn btn-outline" disabled>📱 Transfer from old device</button>
+                        <button class="btn btn-outline" disabled>☁️ Past Recovery Backup</button>
+                        <div style="background: rgba(48, 209, 88, 0.05); border: 1px solid rgba(48, 209, 88, 0.2); border-radius: 8px; padding: 15px; margin-top: auto;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="color: #FFFFFF; font-weight: bold; font-size:0.9rem;">Lost Recovery Key?</span>
+                                <span class="status-badge badge-approved">Approved ✓</span>
+                            </div>
+                            <p style="color: #8E8E93; font-size: 0.8rem; margin: 0 0 12px 0;">New signing environment setup ready.</p>
+                            <button class="btn btn-primary" style="margin-bottom: 0; padding:8px; background:#30D158; color:#fff;">👉 Access New Key Login</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-step">
+            <div class="step-header"><div class="step-title">Phase 2: Local Generation & New Key Backup Prompt</div></div>
+            <div class="step-desc">Triggered when starting fresh or re-submitting. Keys are created locally and must be saved before launching identity checks.</div>
+            <div class="step-body">
+                <div class="screen-row">
+                    
+                    <div class="screen">
+                        <div class="screen-title">🔑 Generation Engine</div>
+                        <div class="screen-subtitle">Select Backup Layer Method</div>
+                        <button class="btn btn-secondary" style="text-align: left; display: flex; gap: 10px;">☁️ iCloud Mirroring</button>
+                        <button class="btn btn-secondary" style="text-align: left; display: flex; gap: 10px;">📁 Google Drive Vault</button>
+                        <button class="btn btn-secondary" style="text-align: left; display: flex; gap: 10px;">🔳 Export Physical QR Token</button>
                     </div>
 
                     <div class="screen" style="border-color: #FFD012;">
                         <div class="screen-title">🔳 Save Your QR Code</div>
-                        
-                        <div class="qr-placeholder" style="margin-top: 15px;"></div>
-                        
-                        <div style="background: rgba(255, 208, 18, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                            <p style="color: #FFD012; font-size: 0.85rem; margin: 0; font-weight: bold;">⚠️ Critical Instruction:</p>
-                            <p style="color: #E0E0E0; font-size: 0.85rem; margin: 5px 0 0 0;">Please save this QR Code securely now. Wait for the approval process to complete. You will need this QR Code to log in later.</p>
+                        <div class="screen-subtitle">Manual Export Requirements</div>
+                        <div class="qr-placeholder"></div>
+                        <div style="background: rgba(255, 208, 18, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                            <p style="color: #FFD012; font-size: 0.8rem; margin: 0; font-weight: bold;">⚠️ Secure Storage Warning:</p>
+                            <p style="color: #E0E0E0; font-size: 0.75rem; margin: 4px 0 0 0;">Save this payload now. It stays offline and inactive until back-end administrators or biometrics authorize your request.</p>
                         </div>
-
-                        <label style="display: flex; align-items: flex-start; font-size: 0.85rem; color: #8E8E93; margin-bottom: 20px;">
+                        <label style="display: flex; align-items: flex-start; font-size: 0.75rem; color: #8E8E93; margin-bottom: 15px; cursor:pointer;">
                             <input type="checkbox" class="inline-checkbox" checked>
-                            I have saved this QR Code securely and understand I will need it after approval.
+                            I confirm this encryption token is stored offline.
                         </label>
-
                         <button class="btn btn-primary" style="margin-top: auto; margin-bottom: 0;">Proceed to Verification</button>
                     </div>
+
                 </div>
             </div>
         </div>
 
         <div class="ui-step">
-            <div class="step-header"><div class="step-title">Phase 3: Verification Route & Execution</div></div>
-            <div class="step-desc">The user lands on a Choice Screen. Option 1 is conditionally offered if the system detects existing Face Data. Liveness leads directly to status change, while Option 2 processes 2FA.</div>
+            <div class="step-header"><div class="step-title">Phase 3: Verification Service & Route Branching</div></div>
+            <div class="step-desc">System verifies historical biometric database logs. Liveness path runs completely decoupled from traditional SMS/Email 2FA. VIP/Manual requests enforce standard credentials.</div>
             <div class="step-body">
                 <div class="screen-row">
                     
                     <div class="screen">
-                        <div class="screen-title">🛡️ Choose Route</div>
-                        <div class="screen-subtitle">Select how you want to verify your identity.</div>
-                        
-                        <div style="margin-bottom: 20px; background: #121212; padding: 12px; border: 1px solid #2C2C2E; border-radius: 8px;">
-                            <span style="font-size:0.8rem; color:#8E8E93;">🔍 Background Check Result:</span>
-                            <div style="color:#30D158; font-size:0.85rem; font-weight:bold; margin-top:4px;">✓ Face Data Detected in System</div>
+                        <div class="screen-title">🛡️ Verification Services</div>
+                        <div class="screen-subtitle">Dynamic Profile Routing Options</div>
+                        <div style="margin-bottom: 15px; background: #121212; padding: 10px; border: 1px solid #2C2C2E; border-radius: 8px; font-size: 0.8rem;">
+                            <span style="color:#8E8E93;">Sumsub API Profile Status:</span>
+                            <div style="color:#30D158; font-weight:bold; margin-top:2px;">✓ Historical Face Signatures Detected</div>
                         </div>
-
-                        <button class="btn btn-outline" style="padding: 15px;">
+                        <button class="btn btn-outline" style="padding: 12px; margin-bottom:12px;">
                             <div>
-                                <span style="font-weight:bold; color:#FFFFFF; display:block;">🟢 Option 1: Instant Liveness</span>
-                                <span style="font-size:0.75rem; color:#8E8E93;">Scan face to approve instantly. No forms required.</span>
+                                <span style="font-weight:bold; color:#FFFFFF; display:block; font-size:0.85rem;">Option 1: Sumsub Liveness</span>
+                                <span style="font-size:0.7rem; color:#8E8E93; display:block; margin-top:2px;">Biometric matching. Fully automated system.</span>
                             </div>
                         </button>
-
-                        <button class="btn btn-outline" style="padding: 15px;">
+                        <button class="btn btn-outline" style="padding: 12px;">
                             <div>
-                                <span style="font-weight:bold; color:#FFFFFF; display:block;">🟣 Option 2: VIP / Manual Review</span>
-                                <span style="font-size:0.75rem; color:#8E8E93;">Requires SMS+Email 2FA. Sent to Admin Portal.</span>
+                                <span style="font-weight:bold; color:#FFFFFF; display:block; font-size:0.85rem;">Option 2: VIP / Manual Form</span>
+                                <span style="font-size:0.7rem; color:#8E8E93; display:block; margin-top:2px;">Requires active 2FA fields. Manual review workspace.</span>
                             </div>
                         </button>
-                        
-                        <p style="color: #636366; font-size: 0.75rem; text-align: center; margin-top: auto;">※ If NO face data was found, Option 1 will be grayed out/hidden.</p>
                     </div>
 
                     <div class="screen" style="border-color: #30D158;">
                         <div class="screen-title">🟢 Option 1</div>
-                        <div class="screen-subtitle">Sumsub Liveness Check</div>
-                        
-                        <div class="camera-box" style="margin-top: 15px; height: 160px;">🎥</div>
-                        <p style="color: #30D158; font-size: 0.85rem; text-align: center; font-weight: bold; margin-bottom: 5px;">Ready to Scan</p>
-                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">
-                            Position your face within the oval frame and blink when prompted to verify instantly.
+                        <div class="screen-subtitle">Biometric Live Scan Environment</div>
+                        <div class="camera-box" style="height: 150px;">🎥 [ Sumsub SDK Frame ]</div>
+                        <p style="color: #8E8E93; font-size: 0.75rem; text-align: center; margin-bottom: 15px; flex-grow: 1;">
+                            No SMS/Email verification required. Real-time liveness data feeds directly into asynchronous signature state webhooks.
                         </p>
-                        
-                        <button class="btn btn-primary" style="margin-top: auto; margin-bottom: 0;">Start Biometric Scan</button>
+                        <button class="btn btn-primary" style="margin-top:auto; margin-bottom:0;">Launch Camera Interface</button>
                     </div>
 
                     <div class="screen" style="border-color: #BF5AF2;">
                         <div class="screen-title">🟣 Option 2</div>
-                        <div class="screen-subtitle">VIP / Manual Submission</div>
-                        
-                        <span class="screen-label">1. Security Verification (Required 2FA)</span>
-                        <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                            <input type="text" class="inline-edit" placeholder="SMS Code" style="margin-bottom:0; padding:8px; font-size:0.85rem;">
-                            <input type="text" class="inline-edit" placeholder="Email Code" style="margin-bottom:0; padding:8px; font-size:0.85rem;">
+                        <div class="screen-subtitle">VIP Credentials Authentication</div>
+                        <span class="screen-label">Security Verification (2FA Required)</span>
+                        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                            <input type="text" class="inline-edit" placeholder="SMS Code" style="margin-bottom:0; padding:8px; font-size:0.8rem;">
+                            <input type="text" class="inline-edit" placeholder="Email Code" style="margin-bottom:0; padding:8px; font-size:0.8rem;">
                         </div>
-
-                        <span class="screen-label">2. Request Details</span>
-                        <textarea class="inline-edit" placeholder="Enter reason for manual recovery (Optional)" style="height: 60px; resize: none; margin-bottom: 10px; font-size:0.85rem;"></textarea>
-                        
-                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 15px; flex-grow: 1;">
-                            You must complete the 2FA codes above before you can submit this manual recovery token request to the Admin.
-                        </p>
-                        
-                        <button class="btn btn-primary" style="margin-bottom: 0;">Verify & Submit Request</button>
+                        <span class="screen-label">Supplemental Workspace Explanations</span>
+                        <textarea class="inline-edit" placeholder="Describe manual recovery circumstances (VIP priority route logs)..." style="height: 60px; resize: none; margin-bottom: 10px; font-size:0.8rem;"></textarea>
+                        <button class="btn btn-primary" style="margin-top: auto; margin-bottom: 0;">Submit Request Token</button>
                     </div>
 
                 </div>
@@ -257,9 +321,9 @@
                 <div class="notification-toast">
                     <div style="font-size: 1.8rem;">🔔</div>
                     <div>
-                        <div style="color: #FFFFFF; font-weight: bold;">System Action: Database Update & Notification Triggered</div>
-                        <div style="color: #8E8E93; font-size: 0.9rem; margin-top: 4px;">
-                            Once the status transitions to <b>Pending</b>, <b>Approved</b>, or <b>Rejected</b>, the system automatically dispatches an SMS & Email notification to pull the user back into the app.
+                        <div style="color: #FFFFFF; font-weight: bold; font-size: 0.9rem;">Asynchronous Webhook Node & Push Notifications</div>
+                        <div style="color: #8E8E93; font-size: 0.8rem; margin-top: 2px;">
+                            When transaction auditing records convert to <b>Pending</b>, <b>Approved</b>, or <b>Rejected</b> states, the event triggers automated SMS & Email dispatch mechanisms to sync client actions.
                         </div>
                     </div>
                 </div>
@@ -267,55 +331,47 @@
         </div>
 
         <div class="ui-step">
-            <div class="step-header"><div class="step-title">Phase 4: Subsequent Login (State Routing)</div></div>
-            <div class="step-desc">When the user logs in again, the system checks their request status and routes them to one of these three screens.</div>
+            <div class="step-header"><div class="step-title">Phase 4: Detailed Request Status Workspaces (Deep-dive Pages)</div></div>
+            <div class="step-desc">Detailed configuration layouts displayed when users interact with active dynamic state entry modules in Phase 1.</div>
             <div class="step-body">
                 <div class="screen-row">
                     
                     <div class="screen" style="border-top: 4px solid #FFD012;">
                         <div class="status-icon text-warning">⏳</div>
                         <div class="screen-title text-warning">Under Review</div>
-                        
-                        <div style="background: #121212; border: 1px solid #2C2C2E; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                            <span style="color: #8E8E93; font-size: 0.85rem;">Request ID: REC-8842-ACK</span>
+                        <div style="background: #121212; border: 1px solid #2C2C2E; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.75rem; font-family: monospace; text-align: center;">
+                            Tracking ID: REC-8842-ACK
                         </div>
-
-                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 25px; flex-grow: 1;">
-                            Your manual recovery request is currently being reviewed. Please wait patiently. We will notify you via Email and SMS once updated.
+                        <p style="color: #8E8E93; font-size: 0.8rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">
+                            Your documentation or biometric data package is inside our review queue. To stop this operation and clear status flags immediately, hit Cancel.
                         </p>
-
-                        <button class="btn btn-secondary">Contact Support</button>
+                        <button class="btn btn-danger-solid" style="margin-bottom: 8px; padding:10px;">🚫 Cancel Request</button>
+                        <button class="btn btn-secondary" style="margin-bottom: 0; padding:10px;">Support Channel</button>
                     </div>
 
                     <div class="screen" style="border-top: 4px solid #FF453A;">
                         <div class="status-icon text-danger">❌</div>
-                        <div class="screen-title text-danger">Request Rejected</div>
-                        
-                        <div style="background: rgba(255, 69, 58, 0.1); border: 1px solid rgba(255, 69, 58, 0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                            <span style="color: #FF453A; font-size: 0.85rem; font-weight: bold;">Reason:</span><br>
-                            <span style="color: #E0E0E0; font-size: 0.85rem;">The submitted information did not match our records.</span>
+                        <div class="screen-title text-danger">Process Rejected</div>
+                        <div style="background: rgba(255, 69, 58, 0.08); border: 1px solid rgba(255, 69, 58, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.75rem;">
+                            <span style="color: #FF453A; font-weight: bold;">Audit Failure logs:</span><br>
+                            <span style="color: #E0E0E0; display:block; margin-top:2px;">Biometric integrity check or 2FA challenge timed out.</span>
                         </div>
-
-                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 25px; flex-grow: 1;">
-                            Unfortunately, we could not verify your identity. Please re-apply if you believe this was an error.
+                        <p style="color: #8E8E93; font-size: 0.8rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">
+                            Verification failed. Reset parameters and ensure connection lines or capture profiles are clear.
                         </p>
-
-                        <button class="btn btn-danger" style="margin-bottom: 0;">Re-apply (Return to Phase 1)</button>
+                        <button class="btn btn-danger" style="margin-bottom: 0; padding:10px;">🔄 Re-submit 重新申請</button>
                     </div>
 
                     <div class="screen" style="border-top: 4px solid #30D158;">
                         <div class="status-icon text-success">✅</div>
-                        <div class="screen-title text-success">Request Approved</div>
-                        
-                        <div style="background: rgba(48, 209, 88, 0.1); border: 1px solid rgba(48, 209, 88, 0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                            <span style="color: #30D158; font-size: 0.9rem; font-weight: bold;">Recovery Key Activated</span>
+                        <div class="screen-title text-success">Key Active</div>
+                        <div style="background: rgba(48, 209, 88, 0.08); border: 1px solid rgba(48, 209, 88, 0.2); padding: 8px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-size: 0.8rem; font-weight: bold; color: #30D158;">
+                            Restoration Confirmed
                         </div>
-
-                        <p style="color: #8E8E93; font-size: 0.85rem; text-align: center; margin-bottom: 25px; flex-grow: 1;">
-                            Your identity has been verified. You can now use the New Recovery Key (the QR Code or Cloud backup you saved earlier) to log in.
+                        <p style="color: #8E8E93; font-size: 0.8rem; text-align: center; margin-bottom: 20px; flex-grow: 1;">
+                            Verification signature confirmed. Back-end security structures have switched to your newly exported environment. Use it to log in now.
                         </p>
-
-                        <button class="btn btn-primary" style="margin-bottom: 0;">Login with New Key</button>
+                        <button class="btn btn-primary" style="margin-bottom: 0; padding:10px; background:#30D158; color:#fff;">Login with New Key</button>
                     </div>
 
                 </div>
